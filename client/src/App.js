@@ -20,18 +20,18 @@ class App extends Component {
     this.socket.on("receiveMessage", message => {receiveMessage(message);} );
 
     const receiveHistory = data => {
-      if(data.userID === this.state.userID && data.friendID === this.state.friendID){
+      if(data.userID == this.state.userID && data.friendID == this.state.friendID){
         this.setState({chatLog: data.history});
       }
     }
     
     const receiveMessage = data => {
-      if(data.userID===this.state.userID && data.friendID===this.state.friendID){
+      if(data.userID==this.state.userID && data.friendID==this.state.friendID){
         let tmp_chatLog = this.state.chatLog;
         tmp_chatLog.push(data.record);
         this.setState({chatLog: tmp_chatLog});
       }
-      else if(data.userID===this.state.userID){
+      else if(data.userID==this.state.userID){
         let tmp_notification = this.state.notification;
         this.state.notification[data.friendID] = true;
         this.setState({notification: tmp_notification});
@@ -56,7 +56,7 @@ class App extends Component {
  
   chooseUser = user => {
     var tmp_friend = 0;
-    if(user===this.state.userID){
+    if(user==this.state.userID){
       this.setState({friendID: 1});
       tmp_friend = 1;
     }
@@ -93,7 +93,7 @@ class App extends Component {
         return (
           <div>
             <div className="column">
-              <ContactList users={users} user={this.state.userID} notification={this.state.notification} change={this.changeFriend} />
+              <ContactList users={users} user={this.state.userID} friend={this.state.friendID} notification={this.state.notification} change={this.changeFriend} />
             </div>
             <div className="column">
               <h1>Currently exchanging intel with: {users[this.state.friendID].name}</h1>
@@ -109,7 +109,7 @@ class ContactList extends Component {
   render() {
     let contacts = [];
     for(let i=0; i<users.length; ++i){
-      if(i!==this.props.user)
+      if(i!=this.props.user && i!=this.props.friend)
         if(this.props.notification[i])
           contacts.push(<p className="character" id={i} onClick={ (e)=>{this.props.change(e.target.id)} } >{users[i].name} (!!!Urgent!!!)</p>);
         else
@@ -117,7 +117,7 @@ class ContactList extends Component {
       }
     return(
       <div>
-        <h2>Contacts:</h2>
+        <h2>Other contacts:</h2>
         {contacts}
       </div>
     )
@@ -128,7 +128,7 @@ class History extends Component {
   render() {
     let history = [];
     for(let i=0; i<this.props.log.length; ++i){
-      if(this.props.log[i].sender===this.props.user)
+      if(this.props.log[i].sender==this.props.user)
         history.push(<p className="me">{this.props.log[i].message}</p>);
       else
         history.push(<p className="other">{this.props.friendName}: {this.props.log[i].message}</p>);
