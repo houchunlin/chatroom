@@ -3,7 +3,7 @@
 ### How To Start
 ```
 npm install
-node server.js
+npm start
 cd client
 npm install
 npm start
