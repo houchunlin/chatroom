@@ -36,6 +36,7 @@ class App extends Component {
         this.state.notification[data.friendID] = true;
         this.setState({notification: tmp_notification});
       }
+      alert(this.state.notification);
     }
   }
 
@@ -69,6 +70,14 @@ class App extends Component {
     this.requestHistory(user,tmp_friend);
   }
 
+  changeFriend = friend => {
+    this.setState({friendID: friend});
+    let tmp_notification = this.state.notification;
+    tmp_notification[friend] = false;
+    this.setState({notification: tmp_notification});
+    this.requestHistory(this.state.userID,friend);
+  }
+
   render() {
     var characterList = [];
     for(let i=0; i<users.length; ++i){
@@ -84,12 +93,10 @@ class App extends Component {
     else
         return (
           <div>
-           <ContactList users={users} user={this.state.userID} friend={this.state.friendID} />
-           <h1>{users[this.state.friendID].name}</h1>
-           <History log={this.state.chatLog} />
+           <ContactList users={users} user={this.state.userID} notification={this.state.notification} change={this.changeFriend} />
+           <h1>Currently exchanging intel with:<br/>{users[this.state.friendID].name}</h1>
+           <History user={this.state.userID} log={this.state.chatLog} friendName={users[this.state.friendID].name} />
            <Chatbox sendMethod={this.sendMessage}/>
-
-
           </div>
         );
   }
@@ -100,11 +107,14 @@ class ContactList extends Component {
     let contacts = [];
     for(let i=0; i<users.length; ++i){
       if(i!==this.props.user)
-        contacts.push(<p>{users[i].name}</p>);
-    }
+        if(this.props.notification[i])
+          contacts.push(<p id={i} onClick={ (e)=>{this.props.change(e.target.id)} } >{users[i].name} (!!!Urgent!!!)</p>);
+        else
+          contacts.push(<p id={i} onClick={ (e)=>{this.props.change(e.target.id)} } >{users[i].name}</p>);
+      }
     return(
       <div>
-        <h2>Contact List:</h2>
+        <h2>Contacts:</h2>
         {contacts}
       </div>
     )
@@ -115,7 +125,10 @@ class History extends Component {
   render() {
     let history = [];
     for(let i=0; i<this.props.log.length; ++i){
+      if(this.props.log[i].sender===this.props.user)
         history.push(<p>{this.props.log[i].message}</p>);
+      else
+        history.push(<p>{this.props.friendName}: {this.props.log[i].message}</p>);
     }
     return(
       <div>
@@ -136,9 +149,6 @@ class Chatbox extends Component {
     this.props.sendMethod(this.state.value);
     this.setState({value: ""});
   }
-  /*change(e){
-    this.setState({value: event.target.value});
-  }*/
 
   render() {
     return(

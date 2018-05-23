@@ -3,9 +3,7 @@ var socket = require('socket.io');
 
 var app = express();
 
-server = app.listen(3125, function(){
-  console.log('Server is running on port 3125');
-});
+server = app.listen(3125);
 
 io = socket(server);
 
@@ -20,7 +18,6 @@ for (let i = 0; i < 4; ++i){
 }
 
 io.on('connection', socket => {
-  console.log(socket.id);
 
 
   socket.on("sendMessage", message => {
